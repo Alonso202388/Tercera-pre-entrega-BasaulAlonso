@@ -3,6 +3,9 @@ from django.http import HttpResponse, HttpRequest
 from .models import Curso, Profesor, Estudiante, Entregable
 from.forms import CursoFormulario, ProfesorFormulario, EstudianteFormulario, EntregableFormulario
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import DeleteView, UpdateView, CreateView
 
 
 # Create your views here.
@@ -31,17 +34,11 @@ def cursos(req):
     
     return render(req, "cursos.html")
 
-def profesores(req, nombre, apellido, email, profesion):
-    
-    profesor = Profesor(nombre=nombre, apellido=apellido, email=email, profesion=profesion )
-    profesor.save()
-    
+def profesores(req):
+      
     return render(req, "profesores.html")
 
-def estudiantes(req, nombre, apellido, email):
-    
-    estudiante = Estudiante(nombre=nombre, apellido=apellido, email=email)
-    estudiante.save()
+def estudiantes(req):
     
     return render(req, "estudiantes.html")
 
@@ -147,7 +144,98 @@ def buscar(req):
     else:
         return HttpResponse("No ingresaste una camada en la búsqueda.")
 
-
+def listaProfesores(req):
     
+    profesores = Profesor.objects.all()
     
+    return render(req, "leerProfesores.html", {"profesores": profesores})
 
+def crea_profesor(req):
+    
+    if req.method == "POST" :
+        
+        miFormulario = ProfesorFormulario(req.POST)
+        
+        if miFormulario.is_valid():
+            
+            data = miFormulario.cleaned_data
+                       
+            profesor = Profesor(nombre=data["nombre"], apellido=data["apellido"], email=data["email"], profesion=data["profesion"])
+            profesor.save()
+            return render(req, "inicio.html", {"mensaje": "Profesor creado con éxito"})
+        else:
+            return render(req, "inicio.html", {"mensaje": "Formulario inválido"})
+    else:
+        
+        miFormulario = ProfesorFormulario()
+        
+        return render(req, "profesor_formulario.html", {"profesores": miFormulario})
+            
+def eliminaProfesor(req, id):
+    
+    if req.method == "POST":
+        
+        profesor = Profesor.objects.get(id=id)
+        profesor.delete()
+        
+        profesores = Profesor.objects.all()
+        
+        return render(req, "leerProfesores.html", {"profesores": profesores})
+            
+def editarProfesor (req, id):
+    
+    profesor = Profesor.objects.get(id=id)
+    
+    if req.method == "POST":
+        
+        miFormulario = ProfesorFormulario(req.POST)
+        
+        if miFormulario.is_valid():
+            
+            data= miFormulario.changed_data
+            
+            profesor.nombre = data["nombre"]
+            profesor.apellido = data["apellido"]
+            profesor.email = data["email"]
+            profesor.profesion = data["profesion"]
+            profesor.save()
+            return render(req, "inicio.html", {"mensaje": "Profesor actualizado con éxito"})
+        else:
+            return render(req, "inicio.html", {"mensaje": "Formulario inválido"})
+    else:
+        
+        miFormulario = ProfesorFormulario(initial={
+            "nombre": profesor.nombre,
+            "apellido": profesor.apellido,
+            "email": profesor.email,
+            "profesion": profesor.profesion,            
+        })
+            
+        return render(req, "editarProfesor.html", {"miFormulario": miFormulario, "id": profesor.id})
+
+class CursoList(ListView):
+    model = Curso
+    template_name = "curso_list.html"
+    context_object_name = "cursos"
+    
+class CursoDetail(DetailView):
+    model = Curso
+    template_name = "curso_datail.html"
+    context_object_name = "curso"
+    
+class CursoCreate(CreateView):
+    model = Curso
+    template_name = "curso_create.html"
+    fields = ["nombre", "camada"]
+    success_url = "/app-alonso/lista-curso/"
+
+class CursoUpdate(UpdateView):
+    model = Curso
+    template_name = "curso_update.html"
+    fields = ("__all__")
+    success_url = "/app-alonso/lista-curso/"
+
+class CursoDelete(DeleteView):
+    model = Curso
+    template_name = "curso_delete.html"
+    success_url = "/app-alonso/"

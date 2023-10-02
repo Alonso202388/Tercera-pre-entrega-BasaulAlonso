@@ -9,8 +9,8 @@ class ProfesorFormulario(forms.Form):
     
     nombre = forms.CharField(required=True)
     apellido = forms.CharField(required=True)
-    email = forms.EmailField(required=True)
-    profesion = forms.CharField(required=True)
+    email = forms.EmailField()
+    profesion = forms.CharField(max_length=30)
     
 class EstudianteFormulario(forms.Form):
     

@@ -1,7 +1,7 @@
 Este proecyto consta de 4 modelos que son:
 Curso, Estudiante, Profesor y entregable.
 
-cada una de ellas tiene formularios para uso ed registro de información, 
+cada una de ellas tiene formularios para el registro de información, 
 a continuación detallos los links de cada uno:
 
 http://127.0.0.1:8000/app-alonso/curso-formulario/
