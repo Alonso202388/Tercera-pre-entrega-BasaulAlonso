@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth.views import LogoutView
 from AppAlonso.views import curso, lista_cursos, inicio, cursos, estudiantes, profesores, entregables, curso_formulario, entregable_formulario, estudiante_formulario, profesor_formulario, busqueda_camada, buscar, listaProfesores, crea_profesor, eliminaProfesor, editarProfesor
 from AppAlonso.views import *
 
@@ -23,7 +24,9 @@ urlpatterns = [
     path('crea-curso/', CursoCreate.as_view(), name="CreaCursos"),
     path('actualiza-curso/<pk>', CursoUpdate.as_view(), name="ActualizarCursos"),
     path('elimina-curso/<pk>', CursoDelete.as_view(), name="EliminaCursos"),
-    
+    path('login/', loginView, name="Login"),
+    path('registrar/', register, name="Registrar"),
+    path('logout/', LogoutView.as_view(template_name="logout.html"), name="Logout"),
     
     
     
